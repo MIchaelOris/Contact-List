@@ -7,6 +7,12 @@ class ContactsController < ApplicationController
       contacts = contacts.where("first_name iLIKE ? OR last_name iLIKE ?", 
                                "%#{search_term}%", 
                                "%#{search_term}%")
+    sort_attribute = parmas[:sort]
+    if sort_attribute
+      @contacts = @contacts.order(sort_attribute => :asc)
+    end
+
+      render 'index.json.jbuilder'
     end
 
   def create
@@ -19,7 +25,7 @@ class ContactsController < ApplicationController
                           phone_number: params[:phone_number]
                           )
     if contact.save
-      render json: contact.as_json
+      render 'show.json.jbuilder'
     else
       puts contact
       render json: {message:contact.errors.full_messages}, status: :unprocessable_entity
@@ -29,7 +35,7 @@ class ContactsController < ApplicationController
 
   def show
     contact = Contact.find(params[:id])
-    render json: contact.as_json
+    render 'show.json.jbuilder'
   end
 
   def update
